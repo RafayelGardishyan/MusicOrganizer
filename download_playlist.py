@@ -61,8 +61,8 @@ def download_song(playlist_t, name, artist):
     
     except Exception as e:
         print(e)
-        if input("Try again? (yes / no) ") == "no":
-            sys.exit()
+        # if input("Try again? (yes / no) ") == "no":
+        #     sys.exit()
         print("[Error] Trying again")
         download_song(playlist_title, name, artist)
 
