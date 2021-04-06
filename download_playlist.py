@@ -18,7 +18,13 @@ if not os.path.isdir("./download/{}".format(playlist_title)):
     mkdir("./download/{}".format(playlist_title))
 
 def download_song(playlist_t, name, artist):
-    filename = "{} - {}.mp3".format(artist, name)
+    cname = name
+    illegal = ['NUL','\',''//',':','*','"','<','>','|']
+ 
+    for i in illegal:
+        cname = cname.replace(i, '')
+
+    filename = "{} - {}.mp3".format(artist, cname)
     directory = "./download/{}/".format(playlist_t)
     try:
         if not filename in str(listdir(directory)):
@@ -30,7 +36,7 @@ def download_song(playlist_t, name, artist):
                     'preferredcodec': 'mp3',
                     'preferredquality': '192',
                 }],
-                'outtmpl': 'download/' + playlist_t + '/%(title)s.%(etx)s',
+                'outtmpl': 'download/' + playlist_t + '/current.%(etx)s',
                 'quiet': False
             }
     
@@ -40,8 +46,8 @@ def download_song(playlist_t, name, artist):
 
             print("Renaming file to {}".format(filename))
             os.rename(
-                "{}/{}.mp3".format(directory, json.loads(results)["videos"][0]["title"]), 
-                "{}/{}".format(directory, filename)
+                "{}current.mp3".format(directory), 
+                "{}{}".format(directory, filename)
                 )
 
             print("Setting tags")
@@ -55,7 +61,7 @@ def download_song(playlist_t, name, artist):
     
     except Exception as e:
         print(e)
-        if input("Try again? (yes / no)") == "no":
+        if input("Try again? (yes / no) ") == "no":
             sys.exit()
         print("[Error] Trying again")
         download_song(playlist_title, name, artist)
