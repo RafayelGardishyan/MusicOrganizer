@@ -3,6 +3,8 @@ import json
 import youtube_dl
 from os import listdir, mkdir
 import os
+import music_tag
+import sys
 
 
 playlist = []
@@ -15,39 +17,48 @@ with open('playlists/playlist_{}.list'.format(playlist_title), 'r+') as playlist
 if not os.path.isdir("./download/{}".format(playlist_title)):
     mkdir("./download/{}".format(playlist_title))
 
-for track in playlist:
+def download_song(playlist_t, name, artist):
+    filename = "{} - {}.mp3".format(artist, name)
+    directory = "./download/{}/".format(playlist_t)
+    try:
+        if not filename in str(listdir(directory)):
+            results = YoutubeSearch("{} by {} lyrics".format(name, artist), max_results=1).to_json()
+            ydl_opts = {
+                'format': 'bestaudio/best',
+                'postprocessors': [{
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': 'mp3',
+                    'preferredquality': '192',
+                }],
+                'outtmpl': 'download/' + playlist_t + '/%(title)s.%(etx)s',
+                'quiet': False
+            }
+    
+            print("Downloading: {}".format(filename))
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.download(['https://www.youtube.com/watch?v={}'.format(json.loads(results)["videos"][0]["id"])])
 
-    # if not track["name"].lower() in str(listdir("./download")).lower():
-    #     results = YoutubeSearch("{} by {} lyrics".format(track["name"], track["artist"]), max_results=1).to_json()
-    #     ydl_opts = {
-    #         'format': 'bestaudio/best',
-    #         'postprocessors': [{
-    #             'key': 'FFmpegExtractAudio',
-    #             'preferredcodec': 'mp3',
-    #             'preferredquality': '192',
-    #         }],
-    #         'outtmpl': 'download/%(title)s.%(etx)s',
-    #         'quiet': False
-    #     }
+            print("Renaming file to {}".format(filename))
+            os.rename(
+                "{}/{}.mp3".format(directory, json.loads(results)["videos"][0]["title"]), 
+                "{}/{}".format(directory, filename)
+                )
 
-    #     print("Downloading: {}".format(json.loads(results)["videos"][0]["title"]))
-    #     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-    #         ydl.download(['https://www.youtube.com/watch?v={}'.format(json.loads(results)["videos"][0]["id"])])
-    # else:
-    #     print(track["name"], "already exists")
+            print("Setting tags")
+            f = music_tag.load_file(directory + filename)
+            f["title"] = name
+            f["artist"] = artist
+            f.save()
 
-    results = YoutubeSearch("{} by {} lyrics".format(track["name"], track["artist"]), max_results=1).to_json()
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-        'outtmpl': 'download/' + playlist_title + '/%(title)s.%(etx)s',
-        'quiet': False
-    }
+        else:
+            print("{} already exists".format(filename))
+    
+    except Exception as e:
+        print(e)
+        if input("Try again? (yes / no)") == "no":
+            sys.exit()
+        print("[Error] Trying again")
+        download_song(playlist_title, name, artist)
 
-    print("Downloading: {}".format(json.loads(results)["videos"][0]["title"]))
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download(['https://www.youtube.com/watch?v={}'.format(json.loads(results)["videos"][0]["id"])])
+for track in playlist:    
+    download_song(playlist_title, track["name"], track["artist"])

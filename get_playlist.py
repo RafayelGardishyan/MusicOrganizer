@@ -14,3 +14,7 @@ def get_playlist():
 
     with open("playlist.list", 'w+') as playlist:
         playlist.write(json.dumps(tracks_obj))
+
+
+if __name__ == "__main__":
+    get_playlist()
