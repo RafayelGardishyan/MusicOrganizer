@@ -5,6 +5,7 @@ from os import listdir, mkdir
 import os
 import music_tag
 import sys
+import unidecode
 
 
 playlist = []
@@ -64,7 +65,7 @@ def download_song(playlist_t, name, artist):
         # if input("Try again? (yes / no) ") == "no":
         #     sys.exit()
         print("[Error] Trying again")
-        download_song(playlist_title, name, artist)
+        download_song(playlist_title, unidecode.unidecode(name), artist)
 
 for track in playlist:    
     download_song(playlist_title, track["name"], track["artist"])
