@@ -5,8 +5,7 @@ from os import listdir, mkdir
 import os
 import music_tag
 import sys
-import unidecode
-
+import unicodedata
 
 playlist = []
 
@@ -20,12 +19,14 @@ if not os.path.isdir("./download/{}".format(playlist_title)):
 
 def download_song(playlist_t, name, artist):
     cname = name
-    illegal = ['NUL','\',''//',':','*','"','<','>','|']
+    cartist = artist
+    illegal = ['NUL','\'', '\"', '\\', '//', ':', '*', '"', '<', '>', '|', '/', '?']
  
     for i in illegal:
-        cname = cname.replace(i, '')
+        cname = cname.replace(i, '_')
+        cartist = cartist.replace(i, '_')
 
-    filename = "{} - {}.mp3".format(artist, cname)
+    filename = "{} - {}.mp3".format(cartist, cname)
     directory = "./download/{}/".format(playlist_t)
     try:
         if not filename in str(listdir(directory)):
@@ -65,7 +66,7 @@ def download_song(playlist_t, name, artist):
         # if input("Try again? (yes / no) ") == "no":
         #     sys.exit()
         print("[Error] Trying again")
-        download_song(playlist_title, unidecode.unidecode(name), artist)
+        download_song(playlist_title, str(unicodedata.normalize('NFKD', name).encode('ASCII', 'ignore')), artist)
 
 for track in playlist:    
     download_song(playlist_title, track["name"], track["artist"])
