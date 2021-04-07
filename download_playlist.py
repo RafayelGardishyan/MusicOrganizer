@@ -77,7 +77,7 @@ def download_song(playlist_t, name, artist):
         print("[Error] Trying again in 1")
         sleep(1)
         print("[Error] Trying again")
-        download_song(playlist_title, str(unicodedata.normalize('NFKD', name).encode('ASCII', 'ignore')), artist)
+        download_song(playlist_title, name, artist)
 
 for track in playlist:    
     download_song(playlist_title, track["name"], track["artist"])
