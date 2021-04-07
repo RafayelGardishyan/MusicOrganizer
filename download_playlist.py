@@ -6,6 +6,7 @@ import os
 import music_tag
 import sys
 import unicodedata
+from time import sleep
 
 playlist = []
 
@@ -65,6 +66,16 @@ def download_song(playlist_t, name, artist):
         print(e)
         # if input("Try again? (yes / no) ") == "no":
         #     sys.exit()
+        print("[Error] Trying again in 5")
+        sleep(1)
+        print("[Error] Trying again in 4")
+        sleep(1)
+        print("[Error] Trying again in 3")
+        sleep(1)
+        print("[Error] Trying again in 2")
+        sleep(1)
+        print("[Error] Trying again in 1")
+        sleep(1)
         print("[Error] Trying again")
         download_song(playlist_title, str(unicodedata.normalize('NFKD', name).encode('ASCII', 'ignore')), artist)
 
