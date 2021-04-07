@@ -22,5 +22,12 @@ while c_imp != "close":
         with open('./playlists/playlist_{}.list'.format(ptitle), 'w+') as p_file:
             p_file.write(json.dumps(playlist))
             p_file.close()
-    
+
+    if c_imp == "list":
+        for i in range(len(playlist)):
+            print("{}) {} - {}".format(i+1, playlist[i]["artist"], playlist[i]["name"]))
+
+    if c_imp == "delete": 
+        playlist.pop(int(input("track number: ") - 1))
+
     c_imp = input("command: ")
