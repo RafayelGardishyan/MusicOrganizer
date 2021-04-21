@@ -81,3 +81,5 @@ def download_song(playlist_t, name, artist):
 
 for track in playlist:    
     download_song(playlist_title, track["name"], track["artist"])
+
+print("Downloads are finished!")
